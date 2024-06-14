@@ -236,3 +236,79 @@ export async function getUser(email: string) {
     throw new Error('Failed to fetch user.');
   }
 }
+
+// NEW STUFF
+interface Movie {
+  uuid: string;
+  imdb_id: string;
+  title: string;
+  original_title: string;
+  original_language: string;
+  description: string;
+  poster_url: string;
+  backdrop_url: string;
+  release_date: string;
+}
+
+interface Reactions {
+  lit: number;
+  'sh!t': number;
+  plus: number;
+  minus: number;
+}
+
+interface MovieResponse {
+  movie: Movie;
+  reactions: Reactions;
+}
+
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+export async function fetchFilteredNewReleases(
+  query: string,
+  currentPage: number
+) {
+  const baseUrl = `${process.env.PICTICULAR_API_URL}/new-releases`;
+  const apiKey = process.env.PICTICULAR_API_KEY;
+  const date = new Date();
+  const sdate = new Date(date.getFullYear(), date.getMonth(), 1);
+  const edate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  const url =
+    baseUrl +
+    '?' +
+    new URLSearchParams({
+      start_date: sdate ? formatDate(sdate) : '',
+      end_date: edate ? formatDate(edate) : '',
+      limit: '10',
+    }).toString();
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      // console.log('\n\n Error fetching new releases:', url, response);
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    // console.log('\n\n Data:', data);
+
+    if (Array.isArray(data)) {
+      return data as MovieResponse[];
+    } else {
+      throw new Error('Invalid JSON response');
+    }
+  } catch (error) {
+    console.error('\n\n Error fetching new releases:', error);
+    return [];
+  }
+}
