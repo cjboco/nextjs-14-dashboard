@@ -10,6 +10,7 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
+import type { TMDBData } from './types';
 
 export async function fetchRevenue() {
   // Add noStore() here prevent the response from being cached.
@@ -238,77 +239,48 @@ export async function getUser(email: string) {
 }
 
 // NEW STUFF
-interface Movie {
-  uuid: string;
-  imdb_id: string;
-  title: string;
-  original_title: string;
-  original_language: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string;
-  release_date: string;
-}
+export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
+  const imdbHost = process.env.TMDB_API_HOST;
+  const imdbApiKey = process.env.TMDB_API_KEY;
+  const url = `${imdbHost}/now_playing?api_key=${imdbApiKey}&language=en-US&page=${page}&region=US`;
 
-interface Reactions {
-  lit: number;
-  'sh!t': number;
-  plus: number;
-  minus: number;
-}
+  // https://api.themoviedb.org/3/movie/
 
-interface MovieResponse {
-  movie: Movie;
-  reactions: Reactions;
-}
-
-function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0];
-}
-
-export async function fetchFilteredNewReleases(
-  query: string,
-  currentPage: number
-) {
-  const baseUrl = `${process.env.PICTICULAR_API_URL}/new-releases`;
-  const apiKey = process.env.PICTICULAR_API_KEY;
-  const date = new Date();
-  const sdate = new Date(date.getFullYear(), date.getMonth(), 1);
-  const edate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-  const url =
-    baseUrl +
-    '?' +
-    new URLSearchParams({
-      start_date: sdate ? formatDate(sdate) : '',
-      end_date: edate ? formatDate(edate) : '',
-      limit: '10',
-    }).toString();
+  if (!imdbHost || !imdbApiKey) {
+    console.error('API keys not found');
+    return {
+      dates: { maximum: '', minimum: '' },
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    };
+  }
 
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        accept: 'application/json',
       },
     });
+    const data: TMDBData = await response.json();
+    // console.log('\n\n data', data);
 
-    if (!response.ok) {
-      // console.log('\n\n Error fetching new releases:', url, response);
-      throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    // console.log('\n\n Data:', data);
-
-    if (Array.isArray(data)) {
-      return data as MovieResponse[];
+    if (data) {
+      return data;
     } else {
-      throw new Error('Invalid JSON response');
+      throw new Error('No results found');
     }
   } catch (error) {
-    console.error('\n\n Error fetching new releases:', error);
-    return [];
+    console.error('Error fetching TMDb new releases:', error);
+    return {
+      dates: { maximum: '', minimum: '' },
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    };
   }
 }
