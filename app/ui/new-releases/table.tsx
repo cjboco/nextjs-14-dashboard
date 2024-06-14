@@ -22,25 +22,20 @@ const getFlagCode = (language: string): FlagIconCode | undefined => {
 
 export default async function NewestReleasesTable({
   movies,
-  query,
   currentPage,
 }: {
   movies: Movie[];
-  query: string;
   currentPage: number;
 }) {
   return (
     <div className='mt-6 flow-root'>
-      <div className='w-full flex flex-col md:flex-row md:justify-between justifty-center items-start mb-4'>
-        <p className='md:w-1/3'>
-          Showing releases from{' '}
-          {movies.length > 0 ? movies[0].release_date : ''} to{' '}
-          {movies.length > 0 ? movies[movies.length - 1].release_date : ''}
-        </p>
-        <p className='md:w-1/3 md:text-center'>
+      <div className='w-full flex flex-col md:flex-row md:justify-between justifty-center items-center mb-4 text-sm bg-zinc-100 p-2 rounded-md gap-2'>
+        <div className='md:w-1/2 text-center bg-white p-2 rounded-sm'>
           Total Results: {movies.length}
-        </p>
-        <p className='md:w-1/3 md:text-right'>Page {currentPage}</p>
+        </div>
+        <div className='md:w-1/2 text-center bg-white p-2 rounded-sm'>
+          Page {currentPage}
+        </div>
       </div>
       <div className='inline-block min-w-full align-middle'>
         <div className='rounded-lg bg-gray-50 p-2 md:pt-0'>
@@ -103,31 +98,34 @@ export default async function NewestReleasesTable({
               </div>
             ))}
           </div>
-          <table className='hidden min-w-full text-gray-900 md:table'>
-            <thead className='rounded-lg text-left text-sm font-normal'>
-              <tr>
-                <th scope='col' className='px-4 py-5 font-medium sm:pl-6'>
+          <table className='hidden min-w-full text-gray-900 md:table rounded-md overflow-hidden'>
+            <thead className='rounded-lg text-left text-sm font-normal table-header-group'>
+              <tr className='bg-zinc-700'>
+                <th
+                  scope='col'
+                  className='px-4 py-5 font-medium sm:pl-6 text-white'
+                >
                   Title
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Release Date
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Overview
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Vote Average
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Popularity
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Language
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium'>
+                <th scope='col' className='px-3 py-5 font-medium text-white'>
                   Poster
                 </th>
-                <th scope='col' className='relative py-3 pl-6 pr-3'>
+                <th scope='col' className='relative py-3 pl-6 pr-3 text-white'>
                   <span className='sr-only'>Actions</span>
                 </th>
               </tr>

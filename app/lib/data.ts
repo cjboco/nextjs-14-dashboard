@@ -242,9 +242,7 @@ export async function getUser(email: string) {
 export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
   const imdbHost = process.env.TMDB_API_HOST;
   const imdbApiKey = process.env.TMDB_API_KEY;
-  const url = `${imdbHost}/now_playing?api_key=${imdbApiKey}&language=en-US&page=${page}&region=US`;
-
-  // https://api.themoviedb.org/3/movie/
+  let url = `${imdbHost}/now_playing?api_key=${imdbApiKey}&language=en-US&page=${page}&region=US`;
 
   if (!imdbHost || !imdbApiKey) {
     console.error('API keys not found');
@@ -256,6 +254,8 @@ export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
       total_results: 0,
     };
   }
+
+  console.log('\n\n url', url);
 
   try {
     const response = await fetch(url, {
