@@ -255,8 +255,6 @@ export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
     };
   }
 
-  console.log('\n\n url', url);
-
   try {
     const response = await fetch(url, {
       method: 'GET',
