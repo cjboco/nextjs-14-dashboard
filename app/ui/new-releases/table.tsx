@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { ViewNewRelease } from '@/app/ui/new-releases/buttons';
 import { FlagIcon, FlagIconCode } from 'react-flag-kit';
+import { generateRowData } from '@/app/lib/utils';
 import type { Movie } from '@/app/lib/types';
 
 const getFlagCode = (language: string): FlagIconCode | undefined => {
@@ -27,39 +28,6 @@ export default async function NewestReleasesTable({
   movies: Movie[];
   currentPage: number;
 }) {
-  class PRNG {
-    private seed: number;
-
-    constructor(seed: number) {
-      this.seed = seed;
-    }
-
-    random(): number {
-      // xorshift32 algorithm
-      this.seed ^= this.seed << 13;
-      this.seed ^= this.seed >> 17;
-      this.seed ^= this.seed << 5;
-      return (this.seed >>> 0) / 0xffffffff;
-    }
-  }
-
-  function dateToSeed(date: Date): number {
-    return date.getTime();
-  }
-
-  function generateRowData(fixedNumber: number, date: Date): number[] {
-    const seed = dateToSeed(date);
-    const prng = new PRNG(seed);
-
-    const row: number[] = [];
-    for (let j = 0; j < 4; j++) {
-      // Generate 4 columns of data
-      const generatedNumber = Math.floor(fixedNumber * prng.random() * 0.5); // Ensure it's a fraction of the fixed number
-      row.push(generatedNumber);
-    }
-    return row;
-  }
-
   const formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,

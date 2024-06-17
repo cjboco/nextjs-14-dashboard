@@ -10,6 +10,7 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
+import { generateRowData } from '@/app/lib/utils';
 import type { TMDBData } from './types';
 
 export async function fetchRevenue() {
@@ -290,13 +291,7 @@ export async function fetchNewReleaseById(id: number) {
 
   if (!tmdbHost || !tmdbApiKey) {
     console.error('API keys not found');
-    return {
-      dates: { maximum: '', minimum: '' },
-      page: 1,
-      results: [],
-      total_pages: 0,
-      total_results: 0,
-    };
+    return null;
   }
 
   try {
@@ -309,19 +304,25 @@ export async function fetchNewReleaseById(id: number) {
     });
     const data = await response.json();
 
-    if (data) {
-      return data;
-    } else {
-      throw new Error('No results found');
+    if (!data) {
+      return null;
     }
+
+    // we need to generate the fake metrics data for this movie
+    const metrics = generateRowData(data.id, new Date(data.release_date));
+
+    return {
+      ...data,
+      metrics: {
+        trailer: data.id,
+        yup: metrics[0],
+        lit: metrics[1],
+        nope: metrics[2],
+        shit: metrics[3],
+      },
+    };
   } catch (error) {
     console.error('Error fetching TMDb new releases:', error);
-    return {
-      dates: { maximum: '', minimum: '' },
-      page: 1,
-      results: [],
-      total_pages: 0,
-      total_results: 0,
-    };
+    return null;
   }
 }
