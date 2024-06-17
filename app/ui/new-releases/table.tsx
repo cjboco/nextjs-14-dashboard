@@ -27,6 +27,43 @@ export default async function NewestReleasesTable({
   movies: Movie[];
   currentPage: number;
 }) {
+  class PRNG {
+    private seed: number;
+
+    constructor(seed: number) {
+      this.seed = seed;
+    }
+
+    random(): number {
+      // xorshift32 algorithm
+      this.seed ^= this.seed << 13;
+      this.seed ^= this.seed >> 17;
+      this.seed ^= this.seed << 5;
+      return (this.seed >>> 0) / 0xffffffff;
+    }
+  }
+
+  function dateToSeed(date: Date): number {
+    return date.getTime();
+  }
+
+  function generateRowData(fixedNumber: number, date: Date): number[] {
+    const seed = dateToSeed(date);
+    const prng = new PRNG(seed);
+
+    const row: number[] = [];
+    for (let j = 0; j < 4; j++) {
+      // Generate 4 columns of data
+      const generatedNumber = Math.floor(fixedNumber * prng.random() * 0.5); // Ensure it's a fraction of the fixed number
+      row.push(generatedNumber);
+    }
+    return row;
+  }
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
   return (
     <div className='mt-6 flow-root'>
       <div className='w-full flex flex-col md:flex-row md:justify-between justifty-center items-center mb-4 text-sm bg-zinc-100 p-2 rounded-md gap-2'>
@@ -80,6 +117,12 @@ export default async function NewestReleasesTable({
                         {newRelease.vote_average} / 10
                       </p>
                       <p className='text-sm text-gray-500'>
+                        {newRelease.vote_average} / 10
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        {newRelease.vote_average} / 10
+                      </p>
+                      <p className='text-sm text-gray-500'>
                         {newRelease.popularity}
                       </p>
                     </div>
@@ -89,7 +132,6 @@ export default async function NewestReleasesTable({
                   <div>
                     <p className='text-xl font-medium'>{newRelease.title}</p>
                     <p>{newRelease.release_date}</p>
-                    <p>{newRelease.overview}</p>
                   </div>
                   <div className='flex justify-end gap-2'>
                     <ViewNewRelease id={newRelease.id.toString()} />
@@ -103,89 +145,115 @@ export default async function NewestReleasesTable({
               <tr className='bg-zinc-700'>
                 <th
                   scope='col'
+                  className='relative py-3 pl-6 pr-3 text-white text-center'
+                >
+                  <span className='sr-only'>Actions</span>
+                </th>
+                <th
+                  scope='col'
                   className='px-4 py-5 font-medium sm:pl-6 text-white'
                 >
                   Title
                 </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
-                  Release Date
-                </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
-                  Overview
-                </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
-                  Vote Average
-                </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
-                  Popularity
-                </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
-                  Language
-                </th>
-                <th scope='col' className='px-3 py-5 font-medium text-white'>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
                   Poster
                 </th>
-                <th scope='col' className='relative py-3 pl-6 pr-3 text-white'>
-                  <span className='sr-only'>Actions</span>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Release Date
+                </th>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Trailer Viewed
+                </th>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Yup
+                </th>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Lit
+                </th>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Nope
+                </th>
+                <th
+                  scope='col'
+                  className='px-3 py-5 font-medium text-white text-center'
+                >
+                  Sh!t
                 </th>
               </tr>
             </thead>
             <tbody className='bg-white'>
-              {movies.map((newRelease) => (
-                <tr
-                  key={newRelease.id}
-                  className='w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg'
-                >
-                  <td className='py-3 pl-6 pr-3'>
-                    <div className='flex items-center gap-3'>
-                      <p>{newRelease.title}</p>
-                    </div>
-                  </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
-                    {newRelease.release_date}
-                  </td>
-                  <td className='px-3 py-3'>{newRelease.overview}</td>
-                  <td className='whitespace-nowrap px-3 py-3'>
-                    {newRelease.vote_average} / 10
-                  </td>
-                  <td className='whitespace-nowrap px-3 py-3'>
-                    {newRelease.popularity}
-                  </td>
-                  <td className='px-3 py-3 text-center'>
-                    <div className='flex flex-col justify-center items-center uppercase gap-1'>
-                      {getFlagCode(newRelease.original_language) && (
-                        <FlagIcon
-                          code={
-                            getFlagCode(
-                              newRelease.original_language
-                            ) as FlagIconCode
-                          }
-                          size={16}
-                        />
-                      )}
-                      {newRelease.original_language}
-                    </div>
-                  </td>
-                  <td className='px-3 py-3'>
-                    <Image
-                      src={
-                        newRelease?.poster_path
-                          ? `https://image.tmdb.org/t/p/w500${newRelease.poster_path}`
-                          : '/placeholder.jpg'
-                      }
-                      className='rounded-sm'
-                      width={64}
-                      height={64}
-                      alt={`${newRelease.title}'s poster`}
-                    />
-                  </td>
-                  <td className='py-3 pl-6 pr-3'>
-                    <div className='flex justify-end gap-3'>
-                      <ViewNewRelease id={newRelease.id.toString()} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {movies.map((newRelease) => {
+                const fakeData = generateRowData(
+                  newRelease.id,
+                  new Date(newRelease.release_date)
+                );
+                return (
+                  <tr
+                    key={newRelease.id}
+                    className='w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg'
+                  >
+                    <td className='py-3 pl-6 pr-3 text-center'>
+                      <div className='flex justify-center gap-3'>
+                        <ViewNewRelease id={newRelease.id.toString()} />
+                      </div>
+                    </td>
+                    <td className='py-3 pl-6 pr-3'>
+                      <div className='flex items-center gap-3'>
+                        <p>{newRelease.title}</p>
+                      </div>
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      <Image
+                        src={
+                          newRelease?.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${newRelease.poster_path}`
+                            : '/placeholder.jpg'
+                        }
+                        className='rounded-sm mx-auto'
+                        width={64}
+                        height={64}
+                        alt={`${newRelease.title}'s poster`}
+                      />
+                    </td>
+                    <td className='whitespace-nowrap px-3 py-3 text-center'>
+                      {newRelease.release_date}
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      {formatter.format(newRelease.id)}
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      {formatter.format(fakeData[0]) ?? 0}
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      {formatter.format(fakeData[1]) ?? 0}
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      {formatter.format(fakeData[2]) ?? 0}
+                    </td>
+                    <td className='px-3 py-3 text-center'>
+                      {formatter.format(fakeData[3]) ?? 0}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
