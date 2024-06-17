@@ -1,14 +1,13 @@
 import Pagination from '@/app/ui/new-releases/pagination';
-import Search from '@/app/ui/search';
 import Table from '@/app/ui/new-releases/table';
 import { lusitana } from '@/app/ui/fonts';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+import { NewReleaseTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { fetchTMDBNewReleases } from '@/app/lib/data';
 
 export const metadata: Metadata = {
-  title: 'Invoices',
+  title: 'New Releases',
 };
 
 export default async function Page({
@@ -26,7 +25,7 @@ export default async function Page({
       <div className='flex w-full items-center justify-between'>
         <h1 className={`${lusitana.className} text-2xl`}>New Releases</h1>
       </div>
-      <Suspense key={currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense key={currentPage} fallback={<NewReleaseTableSkeleton />}>
         <Table movies={newReleases?.results ?? []} currentPage={currentPage} />
       </Suspense>
       <div className='mt-5 flex w-full justify-center'>
