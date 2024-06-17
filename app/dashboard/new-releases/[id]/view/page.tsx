@@ -13,8 +13,6 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   const newRelease = await fetchNewReleaseById(Number(id));
 
-  console.log('newRelease', id, newRelease);
-
   if (!newRelease) {
     notFound();
   }
