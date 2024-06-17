@@ -151,15 +151,15 @@ export default async function NewestReleasesTable({
                 </th>
                 <th
                   scope='col'
-                  className='px-4 py-5 font-medium sm:pl-6 text-white'
-                >
-                  Title
-                </th>
-                <th
-                  scope='col'
                   className='px-3 py-5 font-medium text-white text-center'
                 >
                   Poster
+                </th>
+                <th
+                  scope='col'
+                  className='px-4 py-5 font-medium sm:pl-6 text-white'
+                >
+                  Title
                 </th>
                 <th
                   scope='col'
@@ -215,11 +215,6 @@ export default async function NewestReleasesTable({
                         <ViewNewRelease id={newRelease.id.toString()} />
                       </div>
                     </td>
-                    <td className='py-3 pl-6 pr-3'>
-                      <div className='flex items-center gap-3'>
-                        <p>{newRelease.title}</p>
-                      </div>
-                    </td>
                     <td className='px-3 py-3 text-center'>
                       <Image
                         src={
@@ -232,6 +227,11 @@ export default async function NewestReleasesTable({
                         height={64}
                         alt={`${newRelease.title}'s poster`}
                       />
+                    </td>
+                    <td className='py-3 pl-6 pr-3'>
+                      <div className='flex items-center gap-3'>
+                        <p>{newRelease.title}</p>
+                      </div>
                     </td>
                     <td className='whitespace-nowrap px-3 py-3 text-center'>
                       {newRelease.release_date}
