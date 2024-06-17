@@ -1,21 +1,21 @@
 import Breadcrumbs from '@/app/ui/new-releases/breadcrumbs';
-import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
+import { fetchNewReleaseById } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
+import MovieDetail from '@/app/ui/new-releases/details';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Edit Invoice',
+  title: 'View New Release',
 };
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
 
-  const [invoice, customers] = await Promise.all([
-    fetchInvoiceById(id),
-    fetchCustomers(),
-  ]);
+  const newRelease = await fetchNewReleaseById(Number(id));
 
-  if (!invoice) {
+  console.log('newRelease', id, newRelease);
+
+  if (!newRelease) {
     notFound();
   }
 
@@ -23,14 +23,15 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Invoices', href: '/dashboard/new-releases' },
+          { label: 'NewReleases', href: '/dashboard/new-releases' },
           {
-            label: 'Edit Invoice',
+            label: 'Edit NewRelease',
             href: `/dashboard/new-releases/${id}/view`,
             active: true,
           },
         ]}
       />
+      <MovieDetail movie={newRelease} />
     </main>
   );
 }

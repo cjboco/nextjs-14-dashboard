@@ -240,11 +240,11 @@ export async function getUser(email: string) {
 
 // NEW STUFF
 export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
-  const imdbHost = process.env.TMDB_API_HOST;
-  const imdbApiKey = process.env.TMDB_API_KEY;
-  let url = `${imdbHost}/now_playing?api_key=${imdbApiKey}&language=en-US&page=${page}&region=US`;
+  const tmdbHost = process.env.TMDB_API_HOST;
+  const tmdbApiKey = process.env.TMDB_API_KEY;
+  let url = `${tmdbHost}/now_playing?api_key=${tmdbApiKey}&language=en-US&page=${page}&region=US`;
 
-  if (!imdbHost || !imdbApiKey) {
+  if (!tmdbHost || !tmdbApiKey) {
     console.error('API keys not found');
     return {
       dates: { maximum: '', minimum: '' },
@@ -265,6 +265,49 @@ export async function fetchTMDBNewReleases(page: number): Promise<TMDBData> {
     });
     const data: TMDBData = await response.json();
     // console.log('\n\n data', data);
+
+    if (data) {
+      return data;
+    } else {
+      throw new Error('No results found');
+    }
+  } catch (error) {
+    console.error('Error fetching TMDb new releases:', error);
+    return {
+      dates: { maximum: '', minimum: '' },
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    };
+  }
+}
+
+export async function fetchNewReleaseById(id: number) {
+  const tmdbHost = process.env.TMDB_API_HOST;
+  const tmdbApiKey = process.env.TMDB_API_KEY;
+  let url = `${tmdbHost}/${id}?api_key=${tmdbApiKey}`;
+
+  if (!tmdbHost || !tmdbApiKey) {
+    console.error('API keys not found');
+    return {
+      dates: { maximum: '', minimum: '' },
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    };
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        accept: 'application/json',
+      },
+    });
+    const data = await response.json();
 
     if (data) {
       return data;
