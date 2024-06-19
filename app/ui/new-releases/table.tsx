@@ -55,9 +55,9 @@ export default async function NewestReleasesTable({
                   key={newRelease.id}
                   className='mb-2 w-full rounded-md bg-white p-4'
                 >
-                  <div className='flex items-center justify-between border-b pb-4'>
-                    <div>
-                      <div className='mb-2 flex items-center'>
+                  <div className='flex flex-col w-full items-center justify-between border-b pb-4'>
+                    <div className='flex flex-row justify-between items-start gap-4 w-full mb-2 '>
+                      <div className='grow w-full flex items-center'>
                         <Image
                           src={
                             newRelease?.poster_path
@@ -71,34 +71,29 @@ export default async function NewestReleasesTable({
                         />
                         <p className='font-medium'>{newRelease.title}</p>
                       </div>
-                      <div className='flex flex-col'>
-                        <p className='text-sm text-gray-500'>
-                          Release Date: {newRelease.release_date}
-                        </p>
-                        <p className='text-sm text-gray-500'>
-                          Trailer Viewed: {formatter.format(newRelease.id)}
-                        </p>
-                        <p className='text-sm text-gray-500'>
-                          Yup: {formatter.format(fakeData[0]) ?? 0}
-                        </p>
-                        <p className='text-sm text-gray-500'>
-                          Lit: {formatter.format(fakeData[1]) ?? 0}
-                        </p>
-                        <p className='text-sm text-gray-500'>
-                          Nope: {formatter.format(fakeData[2]) ?? 0}
-                        </p>
-                        <p className='text-sm text-gray-500'>
-                          Sh!t: {formatter.format(fakeData[3]) ?? 0}
-                        </p>
+                      <div className='flex items-center justify-end grow-0'>
+                        <ViewNewRelease id={newRelease.id.toString()} />
                       </div>
                     </div>
-                  </div>
-                  <div className='flex w-full items-center justify-between pt-4'>
-                    <div>
-                      <p className='text-xl font-medium'>{newRelease.title}</p>
-                    </div>
-                    <div className='flex justify-end gap-2'>
-                      <ViewNewRelease id={newRelease.id.toString()} />
+                    <div className='flex flex-col w-full'>
+                      <p className='text-sm text-gray-500'>
+                        Release Date: {newRelease.release_date}
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        Trailer Viewed: {formatter.format(newRelease.id)}
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        Yup: {formatter.format(fakeData[0]) ?? 0}
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        Lit: {formatter.format(fakeData[1]) ?? 0}
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        Nope: {formatter.format(fakeData[2]) ?? 0}
+                      </p>
+                      <p className='text-sm text-gray-500'>
+                        Sh!t: {formatter.format(fakeData[3]) ?? 0}
+                      </p>
                     </div>
                   </div>
                 </div>
