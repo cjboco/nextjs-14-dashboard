@@ -24,7 +24,7 @@ export default async function CardWrapper() {
       <Card title='Pending' value={totalPendingInvoices} type='pending' />
       <Card
         title='Total Customers'
-        value={numberOfCustomers}
+        value={numberOfCustomers * 18.3}
         type='customers'
       />
     </>
