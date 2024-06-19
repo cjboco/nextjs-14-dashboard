@@ -34,80 +34,78 @@ export default async function NewestReleasesTable({
   });
   return (
     <div className='mt-6 flow-root'>
-      <div className='w-full flex flex-col md:flex-row md:justify-between justifty-center items-center mb-4 text-sm bg-zinc-100 p-2 rounded-md gap-2'>
-        <div className='md:w-1/2 text-center bg-white p-2 rounded-sm'>
+      <div className='w-full flex flex-row justify-between items-center mb-4 text-sm bg-zinc-100 p-2 rounded-md gap-2'>
+        <div className='w-1/2 text-center bg-white p-2 rounded-sm'>
           Total Results: {movies.length}
         </div>
-        <div className='md:w-1/2 text-center bg-white p-2 rounded-sm'>
+        <div className='w-1/2 text-center bg-white p-2 rounded-sm'>
           Page {currentPage}
         </div>
       </div>
       <div className='inline-block min-w-full align-middle'>
         <div className='rounded-lg bg-gray-50 p-2 md:pt-0'>
           <div className='md:hidden'>
-            {movies.map((newRelease) => (
-              <div
-                key={newRelease.id}
-                className='mb-2 w-full rounded-md bg-white p-4'
-              >
-                <div className='flex items-center justify-between border-b pb-4'>
-                  <div>
-                    <div className='mb-2 flex items-center'>
-                      <Image
-                        src={
-                          newRelease?.poster_path
-                            ? `https://image.tmdb.org/t/p/w500${newRelease.poster_path}`
-                            : '/placeholder.jpg'
-                        }
-                        className='mr-2 rounded-sm'
-                        width={28}
-                        height={28}
-                        alt={`${newRelease.title}'s poster`}
-                      />
-                      <p>{newRelease.title}</p>
-                    </div>
-                    <div className='flex items-center'>
-                      {getFlagCode(newRelease.original_language) && (
-                        <FlagIcon
-                          code={
-                            getFlagCode(
-                              newRelease.original_language
-                            ) as FlagIconCode
+            {movies.map((newRelease) => {
+              const fakeData = generateRowData(
+                newRelease.id,
+                new Date(newRelease.release_date)
+              );
+              return (
+                <div
+                  key={newRelease.id}
+                  className='mb-2 w-full rounded-md bg-white p-4'
+                >
+                  <div className='flex items-center justify-between border-b pb-4'>
+                    <div>
+                      <div className='mb-2 flex items-center'>
+                        <Image
+                          src={
+                            newRelease?.poster_path
+                              ? `https://image.tmdb.org/t/p/w500${newRelease.poster_path}`
+                              : '/placeholder.jpg'
                           }
-                          size={16}
-                          className='mr-2'
+                          className='mr-2 rounded-sm'
+                          width={28}
+                          height={28}
+                          alt={`${newRelease.title}'s poster`}
                         />
-                      )}
-                      <p className='text-sm text-gray-500'>
-                        {newRelease.release_date}
-                      </p>
-                      <p className='text-sm text-gray-500'>
-                        {newRelease.vote_average} / 10
-                      </p>
-                      <p className='text-sm text-gray-500'>
-                        {newRelease.vote_average} / 10
-                      </p>
-                      <p className='text-sm text-gray-500'>
-                        {newRelease.vote_average} / 10
-                      </p>
-                      <p className='text-sm text-gray-500'>
-                        {newRelease.popularity}
-                      </p>
+                        <p className='font-medium'>{newRelease.title}</p>
+                      </div>
+                      <div className='flex flex-col'>
+                        <p className='text-sm text-gray-500'>
+                          Release Date: {newRelease.release_date}
+                        </p>
+                        <p className='text-sm text-gray-500'>
+                          Trailer Viewed: {formatter.format(newRelease.id)}
+                        </p>
+                        <p className='text-sm text-gray-500'>
+                          Yup: {formatter.format(fakeData[0]) ?? 0}
+                        </p>
+                        <p className='text-sm text-gray-500'>
+                          Lit: {formatter.format(fakeData[1]) ?? 0}
+                        </p>
+                        <p className='text-sm text-gray-500'>
+                          Nope: {formatter.format(fakeData[2]) ?? 0}
+                        </p>
+                        <p className='text-sm text-gray-500'>
+                          Sh!t: {formatter.format(fakeData[3]) ?? 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex w-full items-center justify-between pt-4'>
+                    <div>
+                      <p className='text-xl font-medium'>{newRelease.title}</p>
+                    </div>
+                    <div className='flex justify-end gap-2'>
+                      <ViewNewRelease id={newRelease.id.toString()} />
                     </div>
                   </div>
                 </div>
-                <div className='flex w-full items-center justify-between pt-4'>
-                  <div>
-                    <p className='text-xl font-medium'>{newRelease.title}</p>
-                    <p>{newRelease.release_date}</p>
-                  </div>
-                  <div className='flex justify-end gap-2'>
-                    <ViewNewRelease id={newRelease.id.toString()} />
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+
           <table className='hidden min-w-full text-gray-900 md:table rounded-md overflow-hidden'>
             <thead className='rounded-lg text-left text-sm font-normal table-header-group'>
               <tr className='bg-zinc-700'>
