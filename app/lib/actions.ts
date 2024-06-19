@@ -1,41 +1,20 @@
 'use server';
 
-import { z } from 'zod';
 import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
-const FormSchema = z.object({
-  id: z.string(),
-  customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
-  }),
-  amount: z.coerce
-    .number()
-    .gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
-  }),
-  date: z.string(),
-});
-
-// This is temporary until @types/react-dom is updated
-export type State = {
-  errors?: {
-    customerId?: string[];
-    amount?: string[];
-    status?: string[];
-  };
-  message?: string | null;
-};
-
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData
-) {
+export async function authenticate(prevState: any, formData: FormData) {
   try {
-    await signIn('credentials', Object.fromEntries(formData));
+    await signIn('credentials', {
+      redirect: true,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      redirectTo: '/dashboard',
+    });
   } catch (error) {
-    if ((error as Error).message.includes('CredentialsSignin')) {
-      return 'CredentialsSignin';
+    // console.log('\n\n Failed to sign in:', error);
+    if (error instanceof AuthError) {
+      return { error: 'Sign in failed', message: error.message, status: 401 };
     }
     throw error;
   }

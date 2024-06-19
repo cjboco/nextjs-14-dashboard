@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
@@ -13,8 +14,11 @@ import { authenticate } from '@/app/lib/actions';
 
 export default function LoginForm() {
   const [state, dispatch] = useFormState(authenticate, undefined);
+  const { pending } = useFormStatus();
 
-  console.log('state', state);
+  useEffect(() => {
+    console.log('\n\n\n state:', state);
+  }, [state]);
 
   return (
     <form action={dispatch} className='space-y-3'>
@@ -37,6 +41,7 @@ export default function LoginForm() {
                 type='email'
                 name='email'
                 placeholder='Enter your email address'
+                disabled={pending}
                 required
               />
               <AtSymbolIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900' />
@@ -56,6 +61,7 @@ export default function LoginForm() {
                 type='password'
                 name='password'
                 placeholder='Enter password'
+                disabled={pending}
                 required
                 minLength={6}
               />
@@ -64,18 +70,20 @@ export default function LoginForm() {
           </div>
         </div>
         <LoginButton />
-        <div
-          className='flex h-8 items-end space-x-1'
-          aria-live='polite'
-          aria-atomic='true'
-        >
-          {state === 'CredentialsSignin' && (
+        {state?.error && (
+          <div
+            className='mt-3 flex h-8 items-center justify-center space-x-1'
+            aria-live='polite'
+            aria-atomic='true'
+          >
             <>
-              <ExclamationCircleIcon className='h-5 w-5 text-red-500' />
-              <p className='text-sm text-red-500'>Invalid credentials</p>
+              <ExclamationCircleIcon className='h-5 w-5 font-semibold text-red-500' />
+              <p className='text-sm font-semibold text-red-500'>
+                {state.error}
+              </p>
             </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </form>
   );
